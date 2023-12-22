@@ -1,0 +1,77 @@
+
+h1 {
+    text-align: center;
+    margin-bottom: 2%; 
+}
+  
+h2 {
+    color: white;
+    text-align: center;
+    margin-top: 2%; 
+}
+  
+.container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh; 
+    width: 100%;
+    padding: 2%; 
+}
+  
+.profile {
+    width: 800px;
+    max-width: 90%; 
+    height: 500px;
+    background-color: #001529;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    padding: 2%; 
+    border-radius: 15px;
+    margin-bottom: 6%;
+}
+  
+.avatar {
+    // position: absolute;
+    // z-index: 4;
+    // top: -2px;
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    z-index: 99;
+}
+  
+.statistics {
+    width: 100%; 
+    display: flex;
+    justify-content: space-around; 
+    align-items: center;
+    margin-top: 2%; 
+  
+    div {
+      color: white;
+      border: 2px solid white;
+      padding: 1em; 
+      text-align: center; 
+      min-width: 150px; 
+    }
+}
+
+
+.header {
+    position: relative;
+    width: 100%; 
+}
+  
+.logoutButton {
+    position: fixed; 
+    top: -35px; 
+    right: -99%; 
+    color: white; 
+}
+  
+  

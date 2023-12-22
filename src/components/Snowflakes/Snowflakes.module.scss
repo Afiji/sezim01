@@ -1,0 +1,19 @@
+/* Snowflakes.module.scss */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    background: rgb(255, 255, 255);
+    border-radius: 50%;
+    opacity: 0.8;
+    width: 5px; 
+    height: 5px; 
+    z-index: 99;animation: fall 12s infinite; 
+}
+
+@keyframes fall {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100vh); }
+}
+
+  
+  
