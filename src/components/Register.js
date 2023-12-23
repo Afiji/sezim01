@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import s from "./Register.module.scss";
+import { BASE_API } from "../config";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -36,7 +37,7 @@ const Register = () => {
 
   const register = async () => {
     handleSubmit();
-    const request = await fetch("https://sezim01-api.onrender.com/register/register", {
+    const request = await fetch(`${BASE_API}` + "/register/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -129,7 +130,7 @@ const Register = () => {
             Register
           </Button>
           <Link className={s.link} to="/auth">
-            Authorization
+            Already have an account?
           </Link>
         </Box>
       </div>

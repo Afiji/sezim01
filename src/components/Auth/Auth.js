@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { HANDLE_TOKEN } from "../../redux/slice/tokenSlice";
 import { Link } from "react-router-dom";
+import { BASE_API } from "../../config";
 
 import s from "./Auth.module.scss";
 
@@ -24,7 +25,7 @@ const Auth = () => {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   const auth = async () => {
-    const request = await fetch("https://sezim01-api.onrender.com/auth/auth", {
+    const request = await fetch(`${BASE_API}` + "/auth/auth", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -101,7 +102,7 @@ const Auth = () => {
             Enter
           </Button>
           <Link className={s.link} to="/reg">
-            Register
+            Don't have an account yet?
           </Link>
         </Box>
       </div>

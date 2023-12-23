@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// версия с aws
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import s from "./Profile.module.scss";
 import Avatar from "@mui/material/Avatar";
@@ -8,6 +9,16 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { CLEAR_TOKEN } from "../../redux/slice/tokenSlice";
 import axios from "axios";
+import AWS from "aws-sdk";
+import { BASE_API } from "../../config";
+
+AWS.config.update({
+  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+  region: process.env.REACT_APP_AWS_REGION,
+});
+
+const s3 = new AWS.S3();
 
 const Profule = () => {
   const dispatch = useDispatch();
@@ -17,10 +28,35 @@ const Profule = () => {
   const { todos } = useSelector((state) => state.todos);
   const fileInputRef = React.useRef();
 
-  const [isEditing, setIsEditing] = useState(null); // 'name', 'email', 'password' или null
+  const [isEditing, setIsEditing] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
   const [editedPassword, setEditedPassword] = useState("");
+
+  const handleLogout = () => {
+    dispatch(CLEAR_TOKEN());
+    navigate("/auth");
+  };
+
+  const handleUploadToS3 = (file) => {
+    const uploadParams = {
+      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+      Key: `profile-images/${Date.now()}-${file.name}`,
+      Body: file,
+      ACL: "public-read",
+    };
+
+    return s3.upload(uploadParams).promise();
+  };
+
+  const handleDeleteFromS3 = (fileKey) => {
+    const deleteParams = {
+      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+      Key: fileKey,
+    };
+
+    return s3.deleteObject(deleteParams).promise();
+  };
 
   const startEditing = (field) => {
     setIsEditing(field);
@@ -37,7 +73,7 @@ const Profule = () => {
       if (isEditing === "password") payload.password = editedPassword;
 
       const response = await axios.patch(
-        "https://sezim01-api.onrender.com/user/edit-profile",
+        `${BASE_API}/user/edit-profile`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -51,12 +87,6 @@ const Profule = () => {
 
   console.log(todos);
 
-  const handleLogout = () => {
-    dispatch(CLEAR_TOKEN());
-    navigate("/auth");
-    // console.log("User logged out");
-  };
-
   console.log(user);
   const handleAvatarChange = async (event) => {
     const file = event.target.files[0];
@@ -66,7 +96,7 @@ const Profule = () => {
 
       try {
         const response = await axios.post(
-          "https://sezim01-api.onrender.com/user/upload-avatar",
+          `${BASE_API}/user/upload-avatar`,
           formData,
           {
             headers: {
@@ -75,11 +105,48 @@ const Profule = () => {
           }
         );
 
+        // Обновление состояния пользователя новым URL аватара.
         setUser((prev) => ({ ...prev, avatar: response.data.avatarPath }));
-        // localStorage.setItem("avatar", `http://localhost:5057/${user.avatar}`);
       } catch (error) {
-        console.error(error);
+        console.error("Ошибка при загрузке файла:", error);
       }
+    }
+  };
+
+  const handleDeleteAvatar = async () => {
+    const fileKey = user.avatar.split("/").pop(); // Получаем ключ файла из URL
+    try {
+      await handleDeleteFromS3(fileKey);
+      await deleteUserAvatar();
+    } catch (error) {
+      console.error("Ошибка при удалении файла:", error);
+    }
+  };
+
+  const updateUserAvatar = async (avatarUrl) => {
+    try {
+      const response = await axios.patch(
+        `${BASE_API}/user/edit-profile`,
+        { avatar: avatarUrl },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setUser((prev) => ({
+        ...prev,
+        avatar: response.data.updatedUser.avatar,
+      }));
+    } catch (error) {
+      console.error("Ошибка при обновлении профиля:", error);
+    }
+  };
+
+  const deleteUserAvatar = async () => {
+    try {
+      await axios.delete(`${BASE_API}/user/delete-avatar`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser((prev) => ({ ...prev, avatar: "" }));
+    } catch (error) {
+      console.error("Ошибка при удалении аватара пользователя:", error);
     }
   };
 
@@ -90,16 +157,13 @@ const Profule = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(
-          "https://sezim01-api.onrender.com/user/get-user",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${BASE_API}/user/get-user`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`Error! status: ${response.status}`);
@@ -129,9 +193,6 @@ const Profule = () => {
       </IconButton>
 
       <div className={s.container}>
-        {/* <div className={s.header}> */}
-
-        {/* </div> */}
         <h1>Ваш профиль</h1>
         <input
           ref={fileInputRef}
@@ -139,18 +200,15 @@ const Profule = () => {
           hidden
           onChange={handleAvatarChange}
         />
-        <IconButton onClick={handleClickAvatar}>
+        <IconButton onClick={() => fileInputRef.current.click()}>
           <Avatar
             className={s.avatar}
-            alt="profile photo"
-            src={
-              user.avatar
-                ? `https://sezim01-api.onrender.com/user/${user.avatar}`
-                : localStorage.getItem("avatar")
-            }
+            alt="Profile Photo"
+            src={user.avatar}
             sx={{ width: 200, height: 200 }}
           />
         </IconButton>
+        <button onClick={handleDeleteAvatar}>Удалить аватар</button>
         <div className={s.profile}>
           <div className={s.userInfo}>
             {isEditing === "name" ? (
@@ -194,9 +252,6 @@ const Profule = () => {
             ) : (
               <h2 onClick={() => startEditing("password")}>Пароль: ••••••••</h2>
             )}
-
-            {/* <h2>{user.name}</h2>
-            <h2>{user.email}</h2> */}
           </div>
 
           <div>

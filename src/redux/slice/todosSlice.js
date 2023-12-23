@@ -1,16 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { BASE_API } from "../../config";
 
 export const fetchTodos = createAsyncThunk(
   "todos/fetchTodos",
   async (token, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        "https://sezim01-api.onrender.com/todos/get-all-todos",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${BASE_API}/todos/get-all-todos`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -23,7 +21,7 @@ export const createTodo = createAsyncThunk(
   async ({ title, token }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "https://sezim01-api.onrender.com/todos/create-todo",
+        `${BASE_API}/todos/create-todo`,
         { title },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -39,7 +37,7 @@ export const editTodoName = createAsyncThunk(
   async ({ todoId, newName, token }, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
-        `https://sezim01-api.onrender.com/todos/edit-todo-name/${todoId}`,
+        `${BASE_API}/todos/edit-todo-name/${todoId}`,
         { newName: newName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -55,7 +53,7 @@ export const toggleTodoStatus = createAsyncThunk(
   async ({ todoId, newStatus, token }, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
-        `https://sezim01-api.onrender.com/todos/edit-todo-status/${todoId}`,
+        `${BASE_API}/todos/edit-todo-status/${todoId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +69,7 @@ export const deleteTodo = createAsyncThunk(
   async ({ todoId, token }, { rejectWithValue }) => {
     try {
       const response = await axios.delete(
-        `https://sezim01-api.onrender.com/todos/delete-todo/${todoId}`,
+        `${BASE_API}/todos/delete-todo/${todoId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;
@@ -87,7 +85,7 @@ export const deleteAllTodos = createAsyncThunk(
     const token = getState().auth.token;
     try {
       const response = await axios.delete(
-        "https://sezim01-api.onrender.com/todos/delete-all-todos",
+        `${BASE_API}/todos/delete-all-todos`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
