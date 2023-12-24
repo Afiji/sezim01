@@ -1,4 +1,3 @@
-// версия с aws
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import s from "./Profile.module.scss";
