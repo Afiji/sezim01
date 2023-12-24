@@ -7,6 +7,8 @@ import {
   deleteTodo,
   createTodo,
   deleteAllTodos,
+  uploadTodoImage,
+  deleteTodoImage,
 } from "../../redux/slice/todosSlice";
 import { Table } from "antd";
 import s from "./Todos.module.scss";
@@ -70,6 +72,16 @@ const Todos = () => {
     dispatch(deleteAllTodos());
   };
 
+  const handleUploadImage = async (todoId, file) => {
+    if (file) {
+      dispatch(uploadTodoImage({ todoId, file, token }));
+    }
+  };
+
+  const handleDeleteImage = async (todoId) => {
+    dispatch(deleteTodoImage({ todoId, token }));
+  };
+
   useEffect(() => {
     if (token) {
       dispatch(fetchTodos(token));
@@ -112,6 +124,34 @@ const Todos = () => {
         width: 150,
         sorter: (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt),
         sortDirection: ["descend", "ascend"],
+      },
+      {
+        title: "Изображение",
+        dataIndex: "imageUrl",
+        key: "imageUrl",
+        render: (text, record) => (
+          <>
+            {record.imageUrl ? (
+              <div>
+                <img
+                  src={record.imageUrl}
+                  alt="Todo"
+                  style={{ width: "50px", height: "50px" }}
+                />
+                <Button onClick={() => handleDeleteImage(record._id)}>
+                  Удалить изображение
+                </Button>
+              </div>
+            ) : (
+              <input
+                type="file"
+                onChange={(e) =>
+                  handleUploadImage(record._id, e.target.files[0])
+                }
+              />
+            )}
+          </>
+        ),
       },
       {
         title: "Статус",

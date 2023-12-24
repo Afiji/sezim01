@@ -97,6 +97,39 @@ export const deleteAllTodos = createAsyncThunk(
   }
 );
 
+export const uploadTodoImage = createAsyncThunk(
+  "todos/uploadTodoImage",
+  async ({ todoId, file, token }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const response = await axios.post(
+        `${BASE_API}/todos/upload-image/${todoId}`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const deleteTodoImage = createAsyncThunk(
+  "todos/deleteTodoImage",
+  async ({ todoId, token }, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_API}/todos/delete-image/${todoId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const initialState = {
   todos: [],
   status: "idle",
@@ -154,6 +187,22 @@ const todosSlice = createSlice({
       })
       .addCase(deleteAllTodos.fulfilled, (state) => {
         state.todos = [];
+      })
+      .addCase(uploadTodoImage.fulfilled, (state, action) => {
+        const index = state.todos.findIndex(
+          (todo) => todo._id === action.meta.arg.todoId
+        );
+        if (index !== -1) {
+          state.todos[index].imageUrl = action.payload.imageUrl;
+        }
+      })
+      .addCase(deleteTodoImage.fulfilled, (state, action) => {
+        const index = state.todos.findIndex(
+          (todo) => todo._id === action.meta.arg.todoId
+        );
+        if (index !== -1) {
+          state.todos[index].imageUrl = undefined;
+        }
       });
   },
 });
