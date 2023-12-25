@@ -7,6 +7,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { CLEAR_TOKEN } from "../../redux/slice/tokenSlice";
+import { notification } from "antd";
 import axios from "axios";
 import AWS from "aws-sdk";
 import { BASE_API } from "../../config";
@@ -34,6 +35,7 @@ const Profule = () => {
 
   const handleLogout = () => {
     dispatch(CLEAR_TOKEN());
+    localStorage.removeItem("hasNotified");
     navigate("/auth");
   };
 
@@ -104,7 +106,6 @@ const Profule = () => {
           }
         );
 
-        // Обновление состояния пользователя новым URL аватара.
         setUser((prev) => ({ ...prev, avatar: response.data.avatarPath }));
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
@@ -113,7 +114,7 @@ const Profule = () => {
   };
 
   const handleDeleteAvatar = async () => {
-    const fileKey = user.avatar.split("/").pop(); // Получаем ключ файла из URL
+    const fileKey = user.avatar.split("/").pop();
     try {
       await handleDeleteFromS3(fileKey);
       await deleteUserAvatar();
@@ -152,6 +153,22 @@ const Profule = () => {
   const handleClickAvatar = () => {
     fileInputRef.current.click();
   };
+  const handleSubmit = () => {
+    // console.log(values);
+    notification.success({
+      message: "Authtorization Successful",
+      description: "You have successfully entered!",
+      duration: 2,
+    });
+  };
+
+  useEffect(() => {
+    const notified = localStorage.getItem("hasNotified");
+    if (!notified) {
+      handleSubmit();
+      localStorage.setItem("hasNotified", "true");
+    }
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {

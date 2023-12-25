@@ -36,7 +36,7 @@ const Auth = () => {
     if (response.token) {
       dispatch(HANDLE_TOKEN(response.token));
       localStorage.setItem("token", response.token);
-      navigate("/");
+      navigate("/profile");
     }
     // console.log(response);
     setErrors(response.errors ? { errors: response.errors } : { errors: [] });
