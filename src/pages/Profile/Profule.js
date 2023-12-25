@@ -9,16 +9,7 @@ import { useDispatch } from "react-redux";
 import { CLEAR_TOKEN } from "../../redux/slice/tokenSlice";
 import { notification } from "antd";
 import axios from "axios";
-import AWS from "aws-sdk";
 import { BASE_API } from "../../config";
-
-AWS.config.update({
-  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
-  region: process.env.REACT_APP_AWS_REGION,
-});
-
-const s3 = new AWS.S3();
 
 const Profule = () => {
   const dispatch = useDispatch();
@@ -37,27 +28,6 @@ const Profule = () => {
     dispatch(CLEAR_TOKEN());
     localStorage.removeItem("hasNotified");
     navigate("/auth");
-  };
-
-  const handleUploadToS3 = (file) => {
-    const uploadParams = {
-      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-      Key: `profile-images/${Date.now()}-${file.name}`,
-      Body: file,
-      ACL: "public-read",
-    };
-
-    return s3.upload(uploadParams).promise();
-  };
-
-  const handleDeleteFromS3 = (fileKey) => {
-    const deleteParams = {
-      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-      // Key: fileKey,
-      Key: new URL(fileKey).pathname.split("/").pop(),
-    };
-
-    return s3.deleteObject(deleteParams).promise();
   };
 
   const startEditing = (field) => {
@@ -225,7 +195,7 @@ const Profule = () => {
             sx={{ width: 200, height: 200 }}
           />
         </IconButton>
-        <button onClick={handleDeleteAvatar}>Удалить аватар</button>
+        <button onClick={deleteUserAvatar}>Удалить аватар</button>
         <div className={s.profile}>
           <div className={s.userInfo}>
             {isEditing === "name" ? (
