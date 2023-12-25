@@ -53,7 +53,8 @@ const Profule = () => {
   const handleDeleteFromS3 = (fileKey) => {
     const deleteParams = {
       Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-      Key: fileKey,
+      // Key: fileKey,
+      Key: new URL(fileKey).pathname.split("/").pop(),
     };
 
     return s3.deleteObject(deleteParams).promise();
@@ -116,7 +117,7 @@ const Profule = () => {
   const handleDeleteAvatar = async () => {
     const fileKey = user.avatar.split("/").pop();
     try {
-      await handleDeleteFromS3(fileKey);
+      // await handleDeleteFromS3(fileKey);
       await deleteUserAvatar();
     } catch (error) {
       console.error("Ошибка при удалении файла:", error);
