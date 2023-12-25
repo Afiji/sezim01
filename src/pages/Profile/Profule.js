@@ -84,31 +84,31 @@ const Profule = () => {
     }
   };
 
-  const handleDeleteAvatar = async () => {
-    const fileKey = user.avatar.split("/").pop();
-    try {
-      // await handleDeleteFromS3(fileKey);
-      await deleteUserAvatar();
-    } catch (error) {
-      console.error("Ошибка при удалении файла:", error);
-    }
-  };
+  // const handleDeleteAvatar = async () => {
+  //   const fileKey = user.avatar.split("/").pop();
+  //   try {
+  //     // await handleDeleteFromS3(fileKey);
+  //     await deleteUserAvatar();
+  //   } catch (error) {
+  //     console.error("Ошибка при удалении файла:", error);
+  //   }
+  // };
 
-  const updateUserAvatar = async (avatarUrl) => {
-    try {
-      const response = await axios.patch(
-        `${BASE_API}/user/edit-profile`,
-        { avatar: avatarUrl },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setUser((prev) => ({
-        ...prev,
-        avatar: response.data.updatedUser.avatar,
-      }));
-    } catch (error) {
-      console.error("Ошибка при обновлении профиля:", error);
-    }
-  };
+  // const updateUserAvatar = async (avatarUrl) => {
+  //   try {
+  //     const response = await axios.patch(
+  //       `${BASE_API}/user/edit-profile`,
+  //       { avatar: avatarUrl },
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     setUser((prev) => ({
+  //       ...prev,
+  //       avatar: response.data.updatedUser.avatar,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Ошибка при обновлении профиля:", error);
+  //   }
+  // };
 
   const deleteUserAvatar = async () => {
     try {
@@ -121,9 +121,9 @@ const Profule = () => {
     }
   };
 
-  const handleClickAvatar = () => {
-    fileInputRef.current.click();
-  };
+  // const handleClickAvatar = () => {
+  //   fileInputRef.current.click();
+  // };
   const handleSubmit = () => {
     // console.log(values);
     notification.success({
@@ -195,7 +195,7 @@ const Profule = () => {
             sx={{ width: 200, height: 200 }}
           />
         </IconButton>
-        <button onClick={deleteUserAvatar}>Удалить аватар</button>
+        <button onClick={() => deleteUserAvatar()}>Удалить аватар</button>
         <div className={s.profile}>
           <div className={s.userInfo}>
             {isEditing === "name" ? (
