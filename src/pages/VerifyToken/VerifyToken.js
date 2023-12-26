@@ -29,7 +29,7 @@ const VerifyToken = () => {
     //     }
     //   });
     // }
-    setVerified(true);
+    // setVerified(true);
     notification.success({
       message: "Registration Successful",
       description: "You have successfully registered!",
