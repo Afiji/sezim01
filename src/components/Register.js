@@ -21,13 +21,13 @@ const Register = () => {
 
   const handleSubmit = () => {
     // console.log(values);
-    if (!errors.errors) {
-      notification.success({
-        message: "Registration Successful",
-        description: "You have successfully registered!",
-        duration: 2,
-      });
-    }
+    // if (!errors.errors) {
+    //   notification.success({
+    //     message: "Registration Successful",
+    //     description: "You have successfully registered!",
+    //     duration: 2,
+    //   });
+    // }
   };
 
   const handleValues = (e) => {
