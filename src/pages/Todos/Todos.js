@@ -27,7 +27,7 @@ const Todos = () => {
     if (alert.message) {
       const timer = setTimeout(() => {
         closeAlert();
-      }, 3000);
+      }, 2000);
 
       return () => clearTimeout(timer);
     }

@@ -10,6 +10,7 @@ import { CLEAR_TOKEN } from "../../redux/slice/tokenSlice";
 import { notification } from "antd";
 import axios from "axios";
 import { BASE_API } from "../../config";
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
 
 const Profule = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,25 @@ const Profule = () => {
   const [editedName, setEditedName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
   const [editedPassword, setEditedPassword] = useState("");
+  const [alert, setAlert] = useState({ message: null, type: null });
+
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        closeAlert();
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
+
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+  };
+
+  const closeAlert = () => {
+    setAlert({ message: null, type: null });
+  };
 
   const handleLogout = () => {
     dispatch(CLEAR_TOKEN());
@@ -52,6 +72,7 @@ const Profule = () => {
 
       setUser((prev) => ({ ...prev, ...response.data.updatedUser }));
       setIsEditing(null);
+      showAlert("success", "Редактирование прошло успешно!");
     } catch (error) {
       console.error(error);
     }
@@ -78,6 +99,7 @@ const Profule = () => {
         );
 
         setUser((prev) => ({ ...prev, avatar: response.data.avatarPath }));
+        showAlert("success", "Фото профиля успешно обновлено");
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
       }
@@ -117,6 +139,7 @@ const Profule = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser((prev) => ({ ...prev, avatar: "" }));
+      showAlert("success", "Фото профиля успешно удалено");
     } catch (error) {
       console.log(error);
       console.error("Ошибка при удалении аватара пользователя:", error);
