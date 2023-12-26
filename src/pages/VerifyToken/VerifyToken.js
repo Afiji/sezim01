@@ -19,22 +19,23 @@ const VerifyToken = () => {
   }
 
   useEffect(() => {
-    if (token) {
-      verifyToken().then(() => {
-        {
-          setVerified(true);
-          notification.success({
-            message: "Registration Successful",
-            description: "You have successfully registered!",
-            duration: 2,
-          });
-          setTimeout(() => {
-            navigate("/auth");
-          }, 3000);
-        }
-      });
-    }
-  }, [token, navigate]);
+    // if (token) {
+    //   verifyToken().then(() => {
+    //     {
+
+    //       // setTimeout(() => {
+    //       //   navigate("/auth");
+    //       // }, 3000);
+    //     }
+    //   });
+    // }
+    setVerified(true);
+    notification.success({
+      message: "Registration Successful",
+      description: "You have successfully registered!",
+      duration: 2,
+    });
+  }, [verified]);
 
   return (
     <div className={s.container}>

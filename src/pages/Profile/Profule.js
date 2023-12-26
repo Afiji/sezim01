@@ -112,11 +112,13 @@ const Profule = () => {
 
   const deleteUserAvatar = async () => {
     try {
+      console.log(token);
       await axios.delete(`${BASE_API}/user/delete-avatar`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser((prev) => ({ ...prev, avatar: "" }));
     } catch (error) {
+      console.log(error);
       console.error("Ошибка при удалении аватара пользователя:", error);
     }
   };
